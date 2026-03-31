@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="550dp"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="15dp"
+    android:layout_gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📊 AI 정밀 분석 리포트"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#1B5E20" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="#EEEEEE"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏷️ 비닐 라벨 제거"
+                android:textSize="18sp"
+                android:textColor="#333333"/>
+            <TextView
+                android:id="@+id/detailLabelStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="미흡 (감점)"
+                android:textColor="#F44336"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💧 내부 잔여물/액체"
+                android:textSize="18sp"
+                android:textColor="#333333"/>
+            <TextView
+                android:id="@+id/detailLiquidStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="깨끗함"
+                android:textColor="#4CAF50"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔍 재질 투명도"
+                android:textSize="18sp"
+                android:textColor="#333333"/>
+            <TextView
+                android:id="@+id/detailTransparencyStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="양호"
+                android:textColor="#4CAF50"
+                android:textStyle="bold"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E8F5E9"
+            android:padding="16dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💡 AI 가이드"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:layout_marginBottom="4dp"/>
+            <TextView
+                android:id="@+id/aiGuideText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="라벨을 떼어주시면 오염도 점수가 90점 이상으로 올라가 포인트 적립이 가능해집니다!"
+                android:textSize="14sp"
+                android:textColor="#444444"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnCloseDetail"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="24dp"
+            android:text="확인했습니다"
+            android:textSize="18sp"
+            android:backgroundTint="#2E7D32"
+            app:cornerRadius="12dp"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
