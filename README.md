@@ -4,8 +4,34 @@
 ---
 
 ## 📌 1. 프로젝트 개요
-사용자가 분리수거함 앞에 섰을 때, 태블릿 카메라를 통해 품목을 인식하고 **내부 오염도(잔여물, 라벨 유무 등)**를 분석하여 배출 가능 여부를 알려주는 스마트 분리수거 시스템
+사용자가 분리수거함 앞에 섰을 때, 태블릿 카메라를 통해 품목을 인식하고 **내부 오염도(잔여물, 라벨 유무 등)**를 분석하여 
+배출 가능 여부를 알려주는 스마트 분리수거 시스템
 
+1. 안드로이드 스튜디오 설치
+   버전: Android Studio Ladybug (2024.2.1) 이상 권장 (최신 안정화 버전)
+
+설치 경로: 가급적 기본 경로 사용 (한글 폴더명이 포함된 경로는 에러 발생 확률 높음)
+
+2. 핵심 버전 설정 (build.gradle.kts 기준)
+   프로젝트 오픈 후 build.gradle.kts (Project)와 (Module :app)에서 아래 수치 확인
+
+Compile SDK: 34 (Android 14)
+
+Target SDK: 34
+
+Min SDK: 26 (Android 8.0 - CameraX와 TFLite 안정 구동 하한선)
+
+Kotlin Version: 1.9.0 이상
+
+Java Version: JDK 17 (설정 -> Build, Execution, Deployment -> Build Tools -> Gradle -> Gradle JDK에서 확인)
+
+3. 필수 라이브러리 (Dependencies)
+
+CameraX: 실시간 영상 분석용
+
+TensorFlow Lite: AI 모델 추론용 (api 및 support 포함)
+
+Material Design: 카드뷰 및 버튼 UI용
 
 ## 📌 2. 주요 기능
 🔵 Backend (Functionality)
