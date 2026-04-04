@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         classifier = TrashClassifier(this)
         bluetooth = BluetoothManager(" ") // 아두이노 맥주소
 
-        // 블루투스 연결은 별도 스레드에서 실행 권장 (여기는 기본 틀)
+
         Thread {
             if (bluetooth.connect()) {
                 runOnUiThread { Toast.makeText(this, "아두이노 연결 성공!", Toast.LENGTH_SHORT).show() }
