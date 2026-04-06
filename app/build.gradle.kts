@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.example.capstone"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.capstone"
@@ -40,8 +40,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
-    implementation("org.tensorflow:tensorflow-lite:2.14.0")
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
+    // implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+
 
     val camerax_version = "1.3.0"
     implementation("androidx.camera:camera-core:$camerax_version")
