@@ -22,6 +22,17 @@
             android:textStyle="bold"
             android:textColor="#1B5E20" />
 
+        <TextView
+            android:id="@+id/DialogScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="오염도 점수: 0%"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FF3B30"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1.5dp"

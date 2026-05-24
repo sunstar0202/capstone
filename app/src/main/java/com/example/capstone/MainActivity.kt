@@ -1,6 +1,7 @@
 package com.example.capstone
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         classifier = TrashClassifier(this)
-        bluetooth = BluetoothManager("DC:A6:32:88:E1:CB") // TODO: 아두이노 맥주소 입력
+        bluetooth = BluetoothManager("DC:A6:32:88:E1:CB") // 라즈베리파이 맥주소
 
         scoreText = findViewById<TextView>(R.id.scoreText)
         pollutionGauge = findViewById<ProgressBar>(R.id.pollutionGauge)
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         Thread {
             if (bluetooth.connect()) {
                 runOnUiThread {
-                    Toast.makeText(this, "아두이노 연결 성공!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "라즈베리파이 연결 성공!", Toast.LENGTH_SHORT).show()
                 }
             }
         }.start()
@@ -89,12 +90,7 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (
-            requestCode == CAMERA_PERMISSION_CODE &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (requestCode == CAMERA_PERMISSION_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startCamera()
         } else {
             Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
@@ -103,16 +99,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
-
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewFinder.surfaceProvider)
-                }
-
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewFinder.surfaceProvider)
+            }
             val imageAnalyzer = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
@@ -121,26 +112,16 @@ class MainActivity : AppCompatActivity() {
                         processImageProxy(imageProxy)
                     }
                 }
-
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                this,
-                cameraSelector,
-                preview,
-                imageAnalyzer
-            )
-
+            cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
         }, ContextCompat.getMainExecutor(this))
     }
 
     private fun processImageProxy(imageProxy: ImageProxy) {
         try {
             val bitmap = imageProxy.toBitmap()
-            if (bitmap != null) {
-                lastBitmap = bitmap
-            }
+            if (bitmap != null) { lastBitmap = bitmap }
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -163,56 +144,74 @@ class MainActivity : AppCompatActivity() {
 
         RetrofitClient.api.sendResult(request)
             .enqueue(object : Callback<AnalysisRequest> {
-                override fun onResponse(
-                    call: Call<AnalysisRequest>,
-                    response: Response<AnalysisRequest>
-                ) {
-                    if (response.isSuccessful) {
-                        if (result.second <= 15.0f) {
-                            bluetooth.send("O")
-                        } else {
-                            bluetooth.send("X")
-                        }
-                    } else {
-                        println("서버 응답 실패: ${response.code()}")
-                    }
+                override fun onResponse(call: Call<AnalysisRequest>, response: Response<AnalysisRequest>) {
 
-                    isProcessing = false
+                    handleAnalysisResult(result.second)
                 }
 
                 override fun onFailure(call: Call<AnalysisRequest>, t: Throwable) {
                     t.printStackTrace()
-                    isProcessing = false
+
+                    handleAnalysisResult(result.second)
                 }
             })
+    }
+
+
+    private fun handleAnalysisResult(score: Float) {
+
+        if (score <= 15.0f) {
+            bluetooth.send("O")
+        } else {
+            bluetooth.send("X")
+        }
+
+        isProcessing = false
+
+
+        runOnUiThread {
+            showAnalysisReportDialog(score)
+        }
+    }
+
+
+    private fun showAnalysisReportDialog(score: Float) {
+        val dialog = android.app.Dialog(this)
+        dialog.setContentView(R.layout.dialog_detail)
+        dialog.setCancelable(false)
+
+
+        val btnConfirm = dialog.findViewById<Button>(R.id.btnCloseDetail)
+        val DialogScore = dialog.findViewById<TextView>(R.id.DialogScore)
+        DialogScore.text = "오염도 점수: ${score.toInt()}%"
+
+
+        btnConfirm.setOnClickListener {
+            dialog.dismiss()
+
+
+            val intent = Intent(this, ResultActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        dialog.show()
     }
 
     private fun ImageProxy.toBitmap(): Bitmap? {
         val yBuffer = planes[0].buffer
         val uBuffer = planes[1].buffer
         val vBuffer = planes[2].buffer
-
         val ySize = yBuffer.remaining()
         val uSize = uBuffer.remaining()
         val vSize = vBuffer.remaining()
-
         val nv21 = ByteArray(ySize + uSize + vSize)
-
         yBuffer.get(nv21, 0, ySize)
         vBuffer.get(nv21, ySize, vSize)
         uBuffer.get(nv21, ySize + vSize, uSize)
-
-        val yuvImage = YuvImage(
-            nv21,
-            ImageFormat.NV21,
-            width,
-            height,
-            null
-        )
-
+        val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
         val out = ByteArrayOutputStream()
         yuvImage.compressToJpeg(Rect(0, 0, width, height), 80, out)
-
         val imageBytes = out.toByteArray()
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }

@@ -33,6 +33,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".ResultActivity"
+            android:exported="false" />
 
     </application>
 

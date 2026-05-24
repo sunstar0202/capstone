@@ -27,12 +27,12 @@ class TrashClassifier(context: Context) {
 
         val resized = Bitmap.createScaledBitmap(bitmap, 224, 224, true)
         val input = convertBitmapToBuffer(resized)
-        val output = Array(1) { FloatArray(2) } // [0]:Clean, [1]:Dirty
+        val output = Array(1) { FloatArray(2) }
 
 
         interpreter?.run(input, output)
 
-        val score = output[0][1] * 100 // 오염 확률 %
+        val score = output[0][1] * 100
         val label = if (output[0][0] > output[0][1]) "Clean" else "Dirty"
 
         return Pair(label, score)
