@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         classifier = TrashClassifier(this)
-        bluetooth = BluetoothManager(" ") // TODO: 아두이노 맥주소 입력
+        bluetooth = BluetoothManager("DC:A6:32:88:E1:CB") // TODO: 아두이노 맥주소 입력
 
         scoreText = findViewById<TextView>(R.id.scoreText)
         pollutionGauge = findViewById<ProgressBar>(R.id.pollutionGauge)
