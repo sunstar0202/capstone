@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         dialog.setCancelable(false)
 
 
-        val btnConfirm = dialog.findViewById<Button>(R.id.btnCloseDetail)
+        val btnConfirm = dialog.findViewById<Button>(R.id.btnClose)
         val DialogScore = dialog.findViewById<TextView>(R.id.DialogScore)
         DialogScore.text = "오염도 점수: ${score.toInt()}%"
 

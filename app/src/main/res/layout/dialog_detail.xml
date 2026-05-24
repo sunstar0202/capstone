@@ -120,13 +120,14 @@
                 android:id="@+id/aiGuideText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="라벨을 떼어주시면 오염도 점수가 90점 이상으로 올라가 포인트 적립이 가능해집니다!"
+                android:text="올바르게 분리배출된 플라스틱 고품질 페트병 1개는 약 15g의 탄소 배출을 줄이는 효과가 있습니다. 지구를 지키는 소중한 첫걸음입니다.
+                \n페트병의 비닐 라벨을 완전히 제거하고 내부를 물로 깨끗이 헹궈주시면 재활용 효율이 100%까지 올라갑니다."
                 android:textSize="14sp"
                 android:textColor="#444444"/>
         </LinearLayout>
 
         <Button
-            android:id="@+id/btnCloseDetail"
+            android:id="@+id/btnClose"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="24dp"

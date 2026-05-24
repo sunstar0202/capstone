@@ -12,7 +12,7 @@
         android:id="@+id/imgSuccess"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@android:drawable/checkbox_on_background"
+        android:src="@drawable/separate"
         app:tint="#4CAF50"
         android:layout_marginBottom="40dp"/>
 
@@ -42,5 +42,16 @@
         android:textStyle="bold"
         android:backgroundTint="#2E7D32"
         app:cornerRadius="20dp"/>
+
+    <Button
+        android:id="@+id/btnReview"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:text="📊 분석 결과 다시보기"
+        android:textSize="20sp"
+        android:textColor="#4CAF50"
+        android:backgroundTint="#FFFFFF"
+        app:strokeColor="#4CAF50"
+        app:strokeWidth="2dp" />
 
 </LinearLayout>
