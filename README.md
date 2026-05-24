@@ -180,7 +180,19 @@ Capstone1/
 ├── settings.gradle.kts              # Gradle 모듈 설정
 └── README.md
 
+```
 
+
+## 4 라즈베리파이 구조
+
+전체 구조:
+
+```text
+Android 앱
+ → BluetoothManager.send("O")
+ → Raspberry Pi 4 내장 Bluetooth 수신
+ → GPIO18 PWM 출력
+ → SG90 서보모터 회전
  → 쓰레기통 뚜껑 열림
 ```
 ```text
