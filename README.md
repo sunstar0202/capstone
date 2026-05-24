@@ -165,7 +165,8 @@ Capstone1/
 │           ├── res/layout/                  # Android XML UI
 │           │   ├── activity_start.xml       # 시작 화면
 │           │   └── activity_main.xml        # 카메라 프리뷰 및 분석 화면
-│           │
+│           │   └── activity_result.xml      # 모든 분석이 끝난 후 결과 창
+│           │   └── dialog_detail.xml        # 분석 후 상세 분석 결과창
 │           ├── assets/
 │           │   └── model.tflite             # 학습된 TFLite 모델 파일
 │           │
