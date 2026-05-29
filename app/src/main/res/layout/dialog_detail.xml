@@ -15,6 +15,7 @@
         android:padding="32dp">
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="📊 AI 정밀 분석 리포트"
@@ -45,13 +46,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp">
             <TextView
+                android:id="@+id/detail1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🏷️ 비닐 라벨 제거"
                 android:textSize="18sp"
                 android:textColor="#333333"/>
             <TextView
-                android:id="@+id/detailLabelStatus"
+                android:id="@+id/Status1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -66,13 +68,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp">
             <TextView
+                android:id="@+id/detail2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="💧 내부 잔여물/액체"
                 android:textSize="18sp"
                 android:textColor="#333333"/>
             <TextView
-                android:id="@+id/detailLiquidStatus"
+                android:id="@+id/Status2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -87,13 +90,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp">
             <TextView
+                android:id="@+id/detail3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔍 재질 투명도"
                 android:textSize="18sp"
                 android:textColor="#333333"/>
             <TextView
-                android:id="@+id/detailTransparencyStatus"
+                android:id="@+id/Status3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

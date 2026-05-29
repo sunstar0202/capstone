@@ -29,7 +29,6 @@ class ResultActivity : AppCompatActivity() {
         dialog.setContentView(R.layout.dialog_detail)
         dialog.setCancelable(true)
 
-        // 팝업창 내부의 [확인했습니다] 버튼을 누르면 팝업만 닫히도록 세팅
         val btnConfirm = dialog.findViewById<Button>(R.id.btnClose)
         btnConfirm?.setOnClickListener {
             dialog.dismiss()
