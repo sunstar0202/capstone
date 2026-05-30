@@ -259,15 +259,25 @@ DC:A6:32:88:E1:CB
 ---
 # 3. GPIO 핀 도안
 
+### PET 서보
 ```text
-Raspberry Pi 4 GPIO
-  3.3V (1) (2) 5V  ← 서보 빨강
- GPIO2 (3) (4) 5V
- GPIO3 (5) (6) GND ← 서보 갈색
- GPIO4 (7) (8) GPIO14
-   GND (9) (10) GPIO15
-GPIO17(11) (12) GPIO18 ← 서보 주황
+SG90 주황선 → GPIO18
+SG90 빨간선 → 5V
+SG90 갈색선 → GND
 ```
+### CAN 서보
+```text
+SG90 주황선 → GPIO19
+SG90 빨간선 → 5V
+SG90 갈색선 → GND
+```
+### GLASS 서보
+```text
+SG90 주황선 → GPIO20
+SG90 빨간선 → 5V
+SG90 갈색선 → GND
+```
+
 
 ---
 # 4. 실제 연결 도안
