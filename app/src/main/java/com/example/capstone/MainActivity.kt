@@ -3,6 +3,7 @@ package com.example.capstone
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     private var isProcessing = false
 
     companion object {
-        private const val CAMERA_PERMISSION_CODE = 100
+        private const val PERMISSION_REQUEST_CODE = 1000
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,19 +70,41 @@ class MainActivity : AppCompatActivity() {
             processBitmap(bitmap)
         }
 
+        checkAndRequestPermissions()
+    }
+
+    private fun checkAndRequestPermissions() {
+        val permissions = mutableListOf(Manifest.permission.CAMERA)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissions.add(Manifest.permission.BLUETOOTH_SCAN)
+            permissions.add(Manifest.permission.BLUETOOTH_CONNECT)
+        } else {
+            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
+        val missingPermissions = permissions.filter {
+            checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (missingPermissions.isEmpty()) {
+            startCamera()
+            startBluetoothConnection()
+        } else {
+            requestPermissions(missingPermissions.toTypedArray(), PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    private fun startBluetoothConnection() {
         Thread {
-            if (bluetooth.connect()) {
-                runOnUiThread {
+            val connected = bluetooth.connect()
+            runOnUiThread {
+                if (connected) {
                     Toast.makeText(this, "라즈베리파이 연결 성공!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "라즈베리파이 연결 실패!", Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
-
-        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            startCamera()
-        } else {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
-        }
     }
 
     override fun onRequestPermissionsResult(
@@ -91,14 +114,13 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (
-            requestCode == CAMERA_PERMISSION_CODE &&
-            grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            startCamera()
-        } else {
-            Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                startCamera()
+                startBluetoothConnection()
+            } else {
+                Toast.makeText(this, "모든 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -149,6 +171,7 @@ class MainActivity : AppCompatActivity() {
             pollutionGauge.progress = result.second.toInt()
         }
 
+
         val request = AnalysisRequest(
             label = result.first,
             score = result.second
@@ -163,7 +186,9 @@ class MainActivity : AppCompatActivity() {
                     val serverLabel = response.body()?.label ?: result.first
                     val serverScore = response.body()?.score ?: result.second
 
-                    handleAnalysisResult(serverLabel, serverScore)
+                    runOnUiThread {
+                        handleAnalysisResult(serverLabel, serverScore)
+                    }
                 }
 
                 override fun onFailure(
@@ -172,7 +197,9 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     t.printStackTrace()
 
-                    handleAnalysisResult(result.first, result.second)
+                    runOnUiThread {
+                        handleAnalysisResult(result.first, result.second)
+                    }
                 }
             })
     }
@@ -299,4 +326,6 @@ class MainActivity : AppCompatActivity() {
         val imageBytes = out.toByteArray()
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
+
+
 }
