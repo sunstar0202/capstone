@@ -20,7 +20,6 @@ pet_pwm.start(0)
 can_pwm.start(0)
 glass_pwm.start(0)
 
-#모터제어
 
 def servo_angle(pwm, angle):
     duty = 2.5 + angle / 18.0
@@ -37,10 +36,9 @@ def servo_close(pwm):
     servo_angle(pwm, 0)
 
 
-#플라스틱, 페트병
 def open_pet():
 
-    print("PET 통 개방")
+    print("PET Open")
 
     servo_open(pet_pwm)
 
@@ -49,10 +47,9 @@ def open_pet():
     servo_close(pet_pwm)
 
 
-#캔
 def open_can():
 
-    print("CAN 통 개방")
+    print("CAN Open")
 
     servo_open(can_pwm)
 
@@ -61,11 +58,9 @@ def open_can():
     servo_close(can_pwm)
 
 
-#유리
-
 def open_glass():
 
-    print("GLASS 통 개방")
+    print("GLASS Open")
 
     servo_open(glass_pwm)
 
@@ -76,10 +71,6 @@ def open_glass():
 
 
 
-#ㅡㅡㅡ
-
-
-
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 port = 1
 
@@ -87,19 +78,13 @@ server_sock.bind(("", port))
 server_sock.listen(1)
 
 
-bluetooth.advertise_service(
-    server_sock,
-    "TrashBinServer",
-    service_classes=[bluetooth.SERIAL_PORT_CLASS],
-    profiles=[bluetooth.SERIAL_PORT_PROFILE] 
-)
-
 
 
 
 print("Connecting...")
 
-
+client_sock, address = server_sock.accept()
+print(f"Connected: {address}")
 
 try:
     while True:
@@ -121,10 +106,10 @@ try:
 
         elif data == "X":
 
-            print("오염도 초과 - 투입 거부")
+            print("Dirty ")
 
 except KeyboardInterrupt:
-    print("프로그램 종료")
+    print("End")
 
 finally:
 
