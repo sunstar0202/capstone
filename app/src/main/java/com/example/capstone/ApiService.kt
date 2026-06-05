@@ -8,5 +8,5 @@ interface ApiService {
     @POST("/analysis-result")
     fun sendResult(
         @Body request: AnalysisRequest
-    ): Call<AnalysisRequest>
+    ): Call<AnalysisResponse>
 }
