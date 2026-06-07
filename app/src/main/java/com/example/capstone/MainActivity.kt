@@ -314,7 +314,10 @@ class MainActivity : AppCompatActivity() {
         btnConfirm.setOnClickListener {
             dialog.dismiss()
 
-            val intent = Intent(this, ResultActivity::class.java)
+            val intent = Intent(this, ResultActivity::class.java).apply {
+                putExtra("LAST_LABEL", label)
+                putExtra("LAST_SCORE", score)
+            }
             startActivity(intent)
             finish()
         }
@@ -345,6 +348,4 @@ class MainActivity : AppCompatActivity() {
         val imageBytes = out.toByteArray()
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
-
-
 }
