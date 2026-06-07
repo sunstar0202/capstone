@@ -27,10 +27,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executors
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var classifier: TrashClassifier
     private lateinit var bluetooth: BluetoothManager
 
     private lateinit var scoreText: TextView
@@ -49,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        classifier = TrashClassifier(this)
         bluetooth = BluetoothManager("DC:A6:32:88:E1:CB")
 
         scoreText = findViewById(R.id.scoreText)
@@ -164,30 +165,43 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processBitmap(bitmap: Bitmap) {
-        val result = classifier.analyze(bitmap)
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        val imageBytes = stream.toByteArray()
 
-        runOnUiThread {
-            scoreText.text = "${result.second.toInt()}%"
-            pollutionGauge.progress = result.second.toInt()
-        }
+        val requestBody =
+            imageBytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
 
-
-        val request = AnalysisRequest(
-            label = result.first,
-            score = result.second
+        val imagePart = MultipartBody.Part.createFormData(
+            "file",
+            "capture.jpg",
+            requestBody
         )
 
-        RetrofitClient.api.sendResult(request)
+        RetrofitClient.api.predictTrash(imagePart)
             .enqueue(object : Callback<AnalysisResponse> {
                 override fun onResponse(
                     call: Call<AnalysisResponse>,
                     response: Response<AnalysisResponse>
                 ) {
-                    val serverLabel = response.body()?.label ?: result.first
-                    val serverScore = response.body()?.score ?: result.second
+                    if (response.isSuccessful && response.body() != null) {
+                        val serverLabel = response.body()!!.label
+                        val serverScore = response.body()!!.score
 
-                    runOnUiThread {
-                        handleAnalysisResult(serverLabel, serverScore)
+                        runOnUiThread {
+                            scoreText.text = "${serverScore.toInt()}%"
+                            pollutionGauge.progress = serverScore.toInt()
+                            handleAnalysisResult(serverLabel, serverScore)
+                        }
+                    } else {
+                        runOnUiThread {
+                            isProcessing = false
+                            Toast.makeText(
+                                this@MainActivity,
+                                "AI 분석 실패",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
 
@@ -198,7 +212,12 @@ class MainActivity : AppCompatActivity() {
                     t.printStackTrace()
 
                     runOnUiThread {
-                        handleAnalysisResult(result.first, result.second)
+                        isProcessing = false
+                        Toast.makeText(
+                            this@MainActivity,
+                            "서버 연결 실패",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             })

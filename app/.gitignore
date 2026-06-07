@@ -1,1 +1,10 @@
 /build
+
+# Python
+backend/venv/
+venv/
+
+# Python cache
+backend/__pycache__/
+__pycache__/
+*.pyc

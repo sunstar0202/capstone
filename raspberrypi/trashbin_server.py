@@ -1,42 +1,39 @@
-Python 3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)] on win32
-Type "help", "copyright", "credits" or "license()" for more information.
->>> ```python
-... import bluetooth
-... import RPi.GPIO as GPIO
-... import time
-... 
-... SERVO_PIN = 18
-... 
-... GPIO.setmode(GPIO.BCM)
-... GPIO.setup(SERVO_PIN, GPIO.OUT)
-... 
-... servo = GPIO.PWM(SERVO_PIN, 50)
-... servo.start(0)
-... 
-... 
-... def set_angle(angle):
-...     duty = 2 + (angle / 18)
-...     GPIO.output(SERVO_PIN, True)
-...     servo.ChangeDutyCycle(duty)
-...     time.sleep(0.5)
-...     GPIO.output(SERVO_PIN, False)
-...     servo.ChangeDutyCycle(0)
-... 
-... 
-... def open_lid():
-...     print("open")
-...     set_angle(90)
-...     time.sleep(3)
-... 
-... 
-... def close_lid():
-...     print("close")
-...     set_angle(0)
-...     time.sleep(1)
-... 
-... 
-... server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-... port = 1
+import bluetooth
+import RPi.GPIO as GPIO
+import time
+
+SERVO_PIN = 18
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(SERVO_PIN, GPIO.OUT)
+
+servo = GPIO.PWM(SERVO_PIN, 50)
+servo.start(0)
+
+
+def set_angle(angle):
+    duty = 2 + (angle / 18)
+    GPIO.output(SERVO_PIN, True)
+    servo.ChangeDutyCycle(duty)
+    time.sleep(0.5)
+    GPIO.output(SERVO_PIN, False)
+    servo.ChangeDutyCycle(0)
+
+
+def open_lid():
+    print("open")
+    set_angle(90)
+    time.sleep(3)
+
+
+def close_lid():
+    print("close")
+    set_angle(0)
+    time.sleep(1)
+
+
+server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+port = 1
 
 server_sock.bind(("", port))
 server_sock.listen(1)
@@ -72,6 +69,3 @@ finally:
     GPIO.cleanup()
     client_sock.close()
     server_sock.close()
-```
-
----
