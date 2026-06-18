@@ -146,8 +146,12 @@ class MainActivity : AppCompatActivity() {
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }, ContextCompat.getMainExecutor(this))
     }
 
@@ -169,8 +173,7 @@ class MainActivity : AppCompatActivity() {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
         val imageBytes = stream.toByteArray()
 
-        val requestBody =
-            imageBytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
+        val requestBody = imageBytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
 
         val imagePart = MultipartBody.Part.createFormData(
             "file",
@@ -196,28 +199,16 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         runOnUiThread {
                             isProcessing = false
-                            Toast.makeText(
-                                this@MainActivity,
-                                "AI 분석 실패",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@MainActivity, "AI 분석 실패", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
 
-                override fun onFailure(
-                    call: Call<AnalysisResponse>,
-                    t: Throwable
-                ) {
+                override fun onFailure(call: Call<AnalysisResponse>, t: Throwable) {
                     t.printStackTrace()
-
                     runOnUiThread {
                         isProcessing = false
-                        Toast.makeText(
-                            this@MainActivity,
-                            "서버 연결 실패",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@MainActivity, "서버 연결 실패", Toast.LENGTH_SHORT).show()
                     }
                 }
             })
@@ -262,28 +253,22 @@ class MainActivity : AppCompatActivity() {
         if (score <= 5.0f) {
             status1?.text = "완료 (통과)"
             status1?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-
             status2?.text = "깨끗함"
             status2?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-
             status3?.text = "양호"
             status3?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
         } else if (score <= 15.0f) {
             status1?.text = "미흡 (주의)"
             status1?.setTextColor(android.graphics.Color.parseColor("#FF9800"))
-
             status2?.text = "깨끗함"
             status2?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-
             status3?.text = "양호"
             status3?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
         } else {
             status1?.text = "미흡 (감점)"
             status1?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
-
             status2?.text = "오염 검출"
             status2?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
-
             status3?.text = "불량"
             status3?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
         }
@@ -295,14 +280,12 @@ class MainActivity : AppCompatActivity() {
                 detail2?.text = "🥫 압착/찌그러짐 상태"
                 detail3?.text = "🛡️ 캔 내부 세척도"
             }
-
             "GLASS" -> {
                 title?.text = "📊 GLASS 정밀 분석 리포트"
                 detail1?.text = "🍶 파손/크랙 여부"
                 detail2?.text = "🪙 병뚜껑 분리 여부"
                 detail3?.text = "🧼 유리 변색 상태"
             }
-
             else -> {
                 title?.text = "📊 PET 정밀 분석 리포트"
                 detail1?.text = "🏷️ 비닐 라벨 제거"
@@ -313,6 +296,11 @@ class MainActivity : AppCompatActivity() {
 
         btnConfirm.setOnClickListener {
             dialog.dismiss()
+            try {
+                bluetooth.disconnect()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             val intent = Intent(this, ResultActivity::class.java).apply {
                 putExtra("LAST_LABEL", label)

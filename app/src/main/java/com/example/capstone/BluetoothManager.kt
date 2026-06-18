@@ -6,15 +6,18 @@ import java.util.UUID
 
 class BluetoothManager(private val address: String) {
 
-    private val uuid: UUID =
-        UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-
+    private val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private var socket: BluetoothSocket? = null
 
     fun connect(): Boolean {
         return try {
-            val device = BluetoothAdapter.getDefaultAdapter()
-                .getRemoteDevice(address)
+            try {
+                socket?.close()
+            } catch (_: Exception) {
+            }
+            socket = null
+
+            val device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address)
 
             socket = device.javaClass
                 .getMethod("createRfcommSocket", Int::class.javaPrimitiveType)
@@ -22,7 +25,6 @@ class BluetoothManager(private val address: String) {
 
             socket?.connect()
             true
-
         } catch (e: Exception) {
             e.printStackTrace()
             false
