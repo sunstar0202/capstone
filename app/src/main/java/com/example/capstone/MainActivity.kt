@@ -253,6 +253,7 @@ class MainActivity : AppCompatActivity() {
         val status2 = dialog.findViewById<TextView>(R.id.Status2)
         val status3 = dialog.findViewById<TextView>(R.id.Status3)
 
+        // 소수점 3자리 추출 정밀 연산 공식
         val temp = ((rawScore - displayScore) * 1000 + 0.5f).toInt()
         val c1 = (temp / 100) % 10
         val c2 = (temp / 10) % 10
@@ -326,9 +327,10 @@ class MainActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
 
+            // 🌟 [핵심 수정] 소수점이 100% 살아있는 rawScore 원본을 명확히 보냅니다.
             val intent = Intent(this, ResultActivity::class.java).apply {
                 putExtra("LAST_LABEL", label)
-                putExtra("LAST_SCORE", displayScore.toFloat())
+                putExtra("LAST_SCORE", rawScore)
             }
             startActivity(intent)
             finish()
