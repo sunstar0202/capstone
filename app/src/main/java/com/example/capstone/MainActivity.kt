@@ -189,12 +189,12 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful && response.body() != null) {
                         val serverLabel = response.body()!!.label
-                        val serverScore = response.body()!!.score
+                        val rawScore = response.body()!!.score
 
                         runOnUiThread {
-                            scoreText.text = "${serverScore.toInt()}%"
-                            pollutionGauge.progress = serverScore.toInt()
-                            handleAnalysisResult(serverLabel, serverScore)
+                            scoreText.text = "${rawScore.toInt()}%"
+                            pollutionGauge.progress = rawScore.toInt()
+                            handleAnalysisResult(serverLabel, rawScore)
                         }
                     } else {
                         runOnUiThread {
@@ -214,10 +214,11 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    private fun handleAnalysisResult(label: String, score: Float) {
+    private fun handleAnalysisResult(label: String, rawScore: Float) {
         isProcessing = false
+        val displayScore = rawScore.toInt()
 
-        if (score > 15.0f) {
+        if (displayScore > 15) {
             bluetooth.send("X")
         } else {
             when (label) {
@@ -229,18 +230,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         runOnUiThread {
-            showAnalysisReportDialog(label, score)
+            showAnalysisReportDialog(label, rawScore)
         }
     }
 
-    private fun showAnalysisReportDialog(label: String, score: Float) {
+    private fun showAnalysisReportDialog(label: String, rawScore: Float) {
         val dialog = android.app.Dialog(this)
         dialog.setContentView(R.layout.dialog_detail)
         dialog.setCancelable(false)
 
         val btnConfirm = dialog.findViewById<Button>(R.id.btnClose)
         val dialogScore = dialog.findViewById<TextView>(R.id.DialogScore)
-        dialogScore.text = "오염도 점수: ${score.toInt()}%"
+
+        val displayScore = rawScore.toInt()
+        dialogScore.text = "오염도 점수: ${displayScore}%"
 
         val title = dialog.findViewById<TextView>(R.id.title)
         val detail1 = dialog.findViewById<TextView>(R.id.detail1)
@@ -250,34 +253,55 @@ class MainActivity : AppCompatActivity() {
         val status2 = dialog.findViewById<TextView>(R.id.Status2)
         val status3 = dialog.findViewById<TextView>(R.id.Status3)
 
-        if (score <= 5.0f) {
-            status1?.text = "완료 (통과)"
-            status1?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-            status2?.text = "깨끗함"
-            status2?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-            status3?.text = "양호"
-            status3?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-        } else if (score <= 15.0f) {
-            status1?.text = "미흡 (주의)"
-            status1?.setTextColor(android.graphics.Color.parseColor("#FF9800"))
-            status2?.text = "깨끗함"
-            status2?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-            status3?.text = "양호"
-            status3?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
-        } else {
-            status1?.text = "미흡 (감점)"
-            status1?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
-            status2?.text = "오염 검출"
-            status2?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
-            status3?.text = "불량"
-            status3?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
+        val temp = ((rawScore - displayScore) * 1000 + 0.5f).toInt()
+        val c1 = (temp / 100) % 10
+        val c2 = (temp / 10) % 10
+        val c3 = temp % 10
+
+        fun bindStatusText(tv: TextView?, code: Int, type: Int) {
+            if (type == 1) {
+                when (code) {
+                    1 -> {
+                        tv?.text = "완료 (통과)"
+                        tv?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
+                    }
+                    2 -> {
+                        tv?.text = "미흡 (주의)"
+                        tv?.setTextColor(android.graphics.Color.parseColor("#FF9800"))
+                    }
+                    else -> {
+                        tv?.text = "미흡 (감점)"
+                        tv?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
+                    }
+                }
+            } else if (type == 2) {
+                if (code == 1) {
+                    tv?.text = "깨끗함"
+                    tv?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
+                } else {
+                    tv?.text = "오염 검출"
+                    tv?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
+                }
+            } else {
+                if (code == 1) {
+                    tv?.text = "양호"
+                    tv?.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
+                } else {
+                    tv?.text = "불량"
+                    tv?.setTextColor(android.graphics.Color.parseColor("#FF3B30"))
+                }
+            }
         }
+
+        bindStatusText(status1, c1, 1)
+        bindStatusText(status2, c2, 2)
+        bindStatusText(status3, c3, 3)
 
         when (label) {
             "CAN" -> {
                 title?.text = "📊 CAN 정밀 분석 리포트"
                 detail1?.text = "🔩 이물질 투입 여부"
-                detail2?.text = "🥫 압착/찌그러짐 상태"
+                detail2?.text = "🥫 압착/찌러짐 상태"
                 detail3?.text = "🛡️ 캔 내부 세척도"
             }
             "GLASS" -> {
@@ -304,7 +328,7 @@ class MainActivity : AppCompatActivity() {
 
             val intent = Intent(this, ResultActivity::class.java).apply {
                 putExtra("LAST_LABEL", label)
-                putExtra("LAST_SCORE", score)
+                putExtra("LAST_SCORE", displayScore.toFloat())
             }
             startActivity(intent)
             finish()
